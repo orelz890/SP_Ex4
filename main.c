@@ -15,11 +15,17 @@ int char_ditecter(char c){
     char ans;
     // Add node.
     if(c == 'B' || c == 'n'){
-        ans = insert_node_cmd(pnode)
+        ans = insert_node_cmd(pnode);
+        if (ans != NULL){
+            char_ditecter(ans);
+        }
     }
     // Create a new graph.
     if((c == 'A')){
         ans = build_graph_cmd(pnode);
+        if (ans != NULL){
+            char_ditecter(ans);
+        }
     }
     // Delete node (and relevate edges).
     if(c == 'D'){
