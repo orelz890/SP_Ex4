@@ -7,4 +7,4 @@ graph.o: main.c graph.c graph.h
 
 .PHONY: clean all
 clean:
-	rm -f *.o graph
+	rm -f *.o *.a graph
