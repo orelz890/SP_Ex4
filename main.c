@@ -5,11 +5,15 @@
 
 int char_ditecter(char c);
 
-char c;
-do{
-    scanf("%c",&c);
-    char_ditecter(c);
-} while ((c != '\t' && c != '\n');
+int main(){
+    char c;
+    do{
+        scanf("%c",&c);
+        char_ditecter(c);
+    } while ((c != '\t' && c != '\n');
+
+    return 0;
+}
 
 int char_ditecter(char c){
     char ans;
