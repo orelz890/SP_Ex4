@@ -1,9 +1,8 @@
 FLAGS=-g -Wall
 
 all: graph
-graph: graph.o
-graph.o: main.c graph.c graph.h
-	gcc $(FLAGS) main.c graph.c -o graph.o
+graph: main.c graph.c graph.h
+	gcc $(FLAGS) main.c graph.c -o graph
 
 .PHONY: clean all
 clean:
