@@ -16,8 +16,8 @@ PriorityQ createQ(pnode nodeData, int weight){
 }
  
 // Return the value at head
-int peek(PriorityQ* head){
-    return (*head)->data;
+pnode peek(PriorityQ* head){
+    return (*head)->nodeData;
 }
  
 // Removes the element with the
