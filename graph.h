@@ -31,11 +31,11 @@ void deleteGraph_cmd();
 void shortsPath_cmd();
 void TSP_cmd();
 pnode addNode(pnode currNode,int id);
-int addEdge(pnode node, int dest, int weight);
+void addEdge(pnode *node, int dest, int weight);
 int removeNode(int id);
 pnode findNode(int id);
 pedge findEdge(pnode currNode ,int dest);
-char creatAllGivenEdges(pnode existingNode);
+char creatAllGivenEdges(pnode* existingNode);
 char getValidChar();
 int dijkstra(int src);
 

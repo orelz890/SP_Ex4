@@ -17,22 +17,19 @@ char build_graph_cmd(){
     if (head != NULL){
         deleteGraph_cmd();
     }
-    printf("in here1");
     char c = getValidChar();
-    printf("in here2");
     int nodesNum = c - '0';
     for (size_t i = 0; i < nodesNum; i++){
         pnode currNode = NULL;
         currNode = (pnode) malloc(sizeof(node)); // need to free!!!
         addNode(currNode,i);
     }
-    printf("in here3");
     char currChar = getValidChar();
     while (currChar == 'n'){
         char currNode = getValidChar();
-        currChar = creatAllGivenEdges(findNode(currNode - '0'));
+        pnode temp = findNode(currNode - '0');
+        currChar = creatAllGivenEdges(&temp);
     }
-    printf("in here4");
     return currChar; 
 }
 
@@ -53,21 +50,20 @@ char insert_node_cmd(){
         currNode = (pnode) malloc(sizeof(node)); // need to free!!!
         existingNode = addNode(currNode,id);
     }
-    return creatAllGivenEdges(existingNode);
+    return creatAllGivenEdges(&existingNode);
 }
 
-char creatAllGivenEdges(pnode existingNode){
+char creatAllGivenEdges(pnode *existingNode){
+
     char first;
     char sec;
-    scanf("%c",&first);
-    int dest = first - '0';
-    while (dest >= 0 && dest <= 9){
-        scanf("%c",&sec);
-        int weight = sec - '0';
-        addEdge(existingNode,dest,weight);
-        scanf("%c",&first);
-        dest = first - '0';
-    }
+    do{
+        first = getValidChar();
+        if ((first - '0') >= 0 && (first - '0') <= 9){
+            sec = getValidChar();
+            addEdge(existingNode,(first - '0'),(sec - '0'));
+        }
+    } while ((first - '0') >= 0 && (first - '0') <= 9);
     return first;
 }
 
@@ -96,9 +92,10 @@ pedge findEdge(pnode currNode ,int dest){
     return NULL;
 }
 
-int addEdge(pnode node, int dest, int weight){
-
-    pedge existingEdge = findEdge(node,dest);
+void addEdge(pnode *node, int dest, int weight){
+    // printf("%p,%d,%d",node,dest,weight);
+    // fflush(NULL);
+    pedge existingEdge = findEdge(*node,dest);
     if (existingEdge != NULL){
         existingEdge->weight = weight;
     }
@@ -108,16 +105,16 @@ int addEdge(pnode node, int dest, int weight){
         newEdge->weight = weight;
         newEdge->endpoint = findNode(dest);
         newEdge->next = NULL;
-        if (node->edges == NULL){
-            node->edges = newEdge;
+        if ((*node)->edges == NULL){
+            (*node)->edges = newEdge;
+            (*node)->tail = newEdge;
         }
-        if (node->tail->next != NULL){
-            node->tail->next = newEdge;
+        else{
+            newEdge->next = (*node)->edges;
+            (*node)->edges = newEdge;
         }
-        node->tail = newEdge;
-        node->edgeSize += 1;
+        (*node)->edgeSize += 1;
     }
-    return 0;
 }
 
 pnode addNode(pnode currNode,int id){
