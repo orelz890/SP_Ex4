@@ -18,15 +18,15 @@ PriorityQ createNode(pnode nodeData, int weight){
 // Return the value at head
 PriorityQ peek(PriorityQ* head){
     if ((*head) == NULL){
-        return 1;
+        return NULL;
     }
     PriorityQ currNode = *head;
-    PriorityQ highestPriority = currNode->priority;
+    PriorityQ highestPriority = currNode;
     while (currNode != NULL){
-        if (currNode->priority < highestPriority){
-            highestPriority = currNode->priority;
+        if (currNode->priority < highestPriority->priority){
+            highestPriority = currNode;
         }
-        currNode = *(currNode->next);
+        currNode = currNode->next;
     }
     // If ture it means the highestPriority is the first element.
     return highestPriority;
@@ -34,14 +34,14 @@ PriorityQ peek(PriorityQ* head){
  
 int delete(PriorityQ* head, PriorityQ highestPriority){
     // If ture it means the highestPriority is the first element.
-    if (*(highestPriority->prev) == NULL){
-        head = (*head)->next;
-        *((*head)->prev) = NULL;
+    if (highestPriority->prev == NULL){
+        head = &((*head)->next);
+        (*head)->prev = NULL;
         free(highestPriority);
     }
     else{
-        *(highestPriority->prev)->next = highestPriority->next;
-        *(highestPriority->next)->prev = highestPriority->prev;
+        (highestPriority->prev)->next = highestPriority->next;
+        (highestPriority->next)->prev = highestPriority->prev;
         free(highestPriority);
     }
     return 0;
@@ -51,9 +51,9 @@ int delete(PriorityQ* head, PriorityQ highestPriority){
 int insert(PriorityQ* head, pnode nodeData, int p){
     // Create new Node
     PriorityQ temp = createNode(nodeData, p);
-    (*head)->prev = &temp;
-    temp->next = head;
-    head = temp;
+    (*head)->prev = temp;
+    temp->next = *head;
+    head = &temp;
     return 0;
 }
 

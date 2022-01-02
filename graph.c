@@ -6,9 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef NOPATH
 #define NOPATH 1
-#ifndef WORKED
 #define WORKED 0
 
 PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src);
@@ -243,9 +241,9 @@ int dijkstra(pnode* head, int src){
             int new_weight = temp_node->weight + currEdge->weight;
             if (new_weight < currEdge->endpoint->weight){
                 currEdge->endpoint->weight = new_weight;
-                currEdge->endpoint->perent = &temp_node;
+                currEdge->endpoint->perent = temp_node;
             }
-            currEdge = *(currEdge->next);    
+            currEdge = currEdge->next;  
         }
     }
     return 0;
@@ -256,7 +254,8 @@ PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src){
     if (srcNode == NULL){
         return NULL;
     }
-    queue = &(createNode(srcNode,0));
+    PriorityQ firstElement = createNode(srcNode,0);
+    queue = &(firstElement);
     pnode currNode = *head;
     while (currNode != NULL){
         if(currNode->node_num == src){
@@ -265,7 +264,7 @@ PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src){
         }
         else{
             insert(queue,currNode,INT_MAX);
-            currNode->weight = weightVal;
+            currNode->weight = INT_MAX;
             currNode->perent = NULL;
         }
     }
