@@ -13,7 +13,7 @@ typedef struct edge_ {
 
 typedef struct GRAPH_NODE_ {
     int node_num;
-    double weight;
+    int weight;
     int edgeSize;
     pedge edges;
     pedge tail;
@@ -28,14 +28,14 @@ char insert_node_cmd();
 void delete_node_cmd();
 void printGraph_cmd(); //for self debug
 void deleteGraph_cmd();
-void shortsPath_cmd();
-void TSP_cmd();
+float shortsPath_cmd(int src, int dest);
+float TSP_cmd(int num);
 pnode addNode(pnode currNode,int id);
-void addEdge(pnode *node, int dest, int weight);
+void addEdge(pnode node, int dest, int weight);
 int removeNode(int id);
 pnode findNode(int id);
 pedge findEdge(pnode currNode ,int dest);
-char creatAllGivenEdges(pnode* existingNode);
+char creatAllGivenEdges(pnode existingNode);
 char getValidChar();
 int dijkstra(int src);
 

@@ -28,7 +28,7 @@ char build_graph_cmd(){
     while (currChar == 'n'){
         char currNode = getValidChar();
         pnode temp = findNode(currNode - '0');
-        currChar = creatAllGivenEdges(&temp);
+        currChar = creatAllGivenEdges(temp);
     }
     return currChar; 
 }
@@ -36,34 +36,52 @@ char build_graph_cmd(){
 char insert_node_cmd(){
     char c = getValidChar();
     int id = c -'0';
-    pnode foundNode = findNode(id);
-    pnode existingNode = foundNode;
-    if (foundNode != NULL){
+    pnode existingNode = findNode(id);
+    // if (existingNode != NULL){
+    //     printf("%d\n",existingNode->node_num);
+    // }
+    // fflush(NULL);
+    if (existingNode != NULL){
         pedge currEdge = existingNode->edges;
-        while (currEdge != NULL){
+        while (existingNode->edgeSize != 0){
             pedge nextEdge = currEdge->next;
+            // printf("before = %d\n", currEdge->weight);
+            // fflush(NULL);
             free(currEdge);
+            existingNode->edgeSize -= 1;
+            // printf("after = %d\n", currEdge->weight);
+            // fflush(NULL);
             currEdge = nextEdge;
-        }
-    }else{
-        pnode currNode = NULL;
-        currNode = (pnode) malloc(sizeof(node)); // need to free!!!
+            // printf("next = %d\n", currEdge->weight);
+        }      
+    }
+    else{
+        pnode currNode = (pnode) malloc(sizeof(node)); // need to free!!!
         existingNode = addNode(currNode,id);
     }
-    return creatAllGivenEdges(&existingNode);
+    // printf("%p,%d\n",existingNode->edges,existingNode->node_num);
+    // fflush(NULL);
+    char ans = creatAllGivenEdges(existingNode);
+    return ans;
 }
 
-char creatAllGivenEdges(pnode *existingNode){
+char creatAllGivenEdges(pnode existingNode){
 
     char first;
     char sec;
     do{
         first = getValidChar();
-        if ((first - '0') >= 0 && (first - '0') <= 9){
+        int dest = first - '0';
+        if (dest >= 0 && dest <= 9){
             sec = getValidChar();
-            addEdge(existingNode,(first - '0'),(sec - '0'));
+            int weight = sec - '0';
+            addEdge(existingNode,dest,weight);
+            // printf("dest = %d, weight = %d\n",dest,weight);
+            fflush(NULL);
         }
     } while ((first - '0') >= 0 && (first - '0') <= 9);
+    // printf("finished and first = %c\n",first);
+    fflush(NULL);
     return first;
 }
 
@@ -82,20 +100,23 @@ pnode findNode(int id){
 
 pedge findEdge(pnode currNode ,int dest){
     pedge edgesPointer = currNode->edges;
-
-    while (edgesPointer != NULL){
+    int i = 0;
+    while (edgesPointer != NULL && i < currNode->edgeSize){
         if ((edgesPointer->endpoint)->node_num == dest){
             return edgesPointer;
         }
+        i+=1;
+        // printf("im here: %p,%d\n",edgesPointer,edgesPointer->endpoint->node_num);
+        // fflush(NULL);
         edgesPointer = edgesPointer->next;
     }
     return NULL;
 }
 
-void addEdge(pnode *node, int dest, int weight){
+void addEdge(pnode node, int dest, int weight){
     // printf("%p,%d,%d",node,dest,weight);
     // fflush(NULL);
-    pedge existingEdge = findEdge(*node,dest);
+    pedge existingEdge = findEdge(node,dest);
     if (existingEdge != NULL){
         existingEdge->weight = weight;
     }
@@ -105,15 +126,15 @@ void addEdge(pnode *node, int dest, int weight){
         newEdge->weight = weight;
         newEdge->endpoint = findNode(dest);
         newEdge->next = NULL;
-        if ((*node)->edges == NULL){
-            (*node)->edges = newEdge;
-            (*node)->tail = newEdge;
+        if (node->edges == NULL){
+            node->edges = newEdge;
+            node->tail = newEdge;
         }
         else{
-            newEdge->next = (*node)->edges;
-            (*node)->edges = newEdge;
+            newEdge->next = node->edges;
+            node->edges = newEdge;
         }
-        (*node)->edgeSize += 1;
+        node->edgeSize += 1;
     }
 }
 
@@ -124,7 +145,7 @@ pnode addNode(pnode currNode,int id){
     currNode->next = NULL;
     currNode->prev = NULL;
     currNode->perent = NULL;
-    currNode->weight = INFINITY;
+    currNode->weight = INT_MAX;
     currNode->edgeSize = 0;
     
     pnode tempNode = head;
@@ -136,8 +157,10 @@ pnode addNode(pnode currNode,int id){
             }
             tempNode = tempNode->next;
         }
-        tempNode->next = currNode;
-        currNode->prev = tempNode;
+        if (tempNode->node_num != id){
+            tempNode->next = currNode;
+            currNode->prev = tempNode;
+        }
     }else{
         head = currNode;
     }
@@ -200,12 +223,17 @@ void printGraph_cmd(){
     pnode currNode = head;
     while (currNode != NULL){
         printf("id: %d {",currNode->node_num);
+        fflush(NULL);
+        int i = 0;
         pedge currEdge = currNode->edges;
-        while (currEdge != NULL){
+        while (currEdge != NULL && i < currNode->edgeSize){
             printf("(%d,%d), ",currEdge->endpoint->node_num, currEdge->weight);   
+            fflush(NULL);
+            i+=1;
             currEdge = currEdge->next;
         }
         printf("}\n");
+        fflush(NULL);
         currNode = currNode->next;
     }
 }
@@ -214,16 +242,29 @@ void deleteGraph_cmd(){
     // Erasing all the edges to this node
     pnode tempNode = head;
     while (tempNode != NULL){
-        pnode nextNode = tempNode->next;
+        // printf("%p,%d\n",tempNode,tempNode->node_num);
+        // fflush(NULL);
         pedge currEdge = tempNode->edges;
-        while (currEdge != NULL){
+        while (currEdge != NULL && currEdge->weight > 0){
+            // printf("%d,%d\n",currEdge->endpoint->node_num,currEdge->weight);
+            // fflush(NULL);
             pedge nextEdge = currEdge->next;
             free(currEdge);
+            tempNode->edgeSize -= 1;
             currEdge = nextEdge;
         }
         free(tempNode);
-        tempNode = nextNode;
+        tempNode = tempNode->next;
     }
+    // printf("cosemak va cosemak %d,%d,%d",head->node_num,head->weight,head->edgeSize);
+    // // pnode firstNode = head;
+    // // while (firstNode != NULL){
+    // //     printf("%p,%d\n",tempNode,tempNode->node_num);
+    // //     fflush(NULL);
+    // //     pnode nextNodeInLine = tempNode->next;
+    // //     free(tempNode);
+    // //     tempNode = nextNodeInLine;
+    // // }
 }
 
 int dijkstra(int src){
@@ -269,12 +310,71 @@ PriorityQ* setAllTags(PriorityQ* queue,int src){
     return queue;
 }
 
-void shortsPath_cmd(){
-
+float shortsPath_cmd(int src, int dest){
+    dijkstra(src);
+    pnode destNode = findNode(dest);
+    pnode srcNode = findNode(src);
+    float sum = 0;
+    if(src == dest){
+        return 0;
+    }
+    if (srcNode== NULL || destNode == NULL){
+        printf("-1");
+        return -1;
+    }
+    while (destNode->perent->node_num != src){
+        pedge edge = findEdge(destNode, destNode->perent->node_num);
+        sum = sum + edge->weight;
+        destNode = destNode->perent;
+    }
+    if (sum == INT_MAX){
+        printf("-1");
+        return -1;
+    }
+    return sum;
 }
 
-void TSP_cmd(){
-
+float TSP_cmd(int num){
+    int temp;
+    int lopps = num;
+    int minPath =  INT_MAX;
+    int cities[num];
+    int n;
+    for (int i = 0; i < num; i++) {
+        n = getValidChar() - '0';
+        cities[i] = n;
+    }
+    for (int j = 0; j <num; j++){
+        for (int i = 0; i < num-j; i++) {
+            // if size is odd, swap 0th i.e (first) and
+            // (size-1)th i.e (last) element
+            if ((num-j) % 2 == 1){
+                temp = cities[0];
+                cities[0]=cities[num-j - 1];
+                cities[num-j - 1] = temp;}
+            
+                // If size is even, swap ith and
+                // (size-1)th i.e (last) element
+            else if((num-j) % 2 == 0){
+                temp =cities[i];
+                cities[i]=cities[num-j - 1];
+                cities[num-j - 1] = temp;
+                }
+        }
+    if ((num-j) == 1) {
+            int sum = 0;
+            for (int j = 0; j < lopps-1; ++j) {
+                sum += shortsPath_cmd(cities[j], cities[j + 1]);
+            }
+            if (sum < minPath) {
+                minPath = sum;
+            }
+        }
+        }
+    if(minPath == INT_MAX){
+        minPath = -1;
+    }
+    return minPath;
 }
 
 char getValidChar(){
