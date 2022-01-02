@@ -1,7 +1,7 @@
 #include <math.h> 
-#include <stdio.h>
 #include <string.h>
 #include "graph.h"
+#include "priorityQueue.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -23,7 +23,7 @@ char build_graph_cmd(pnode *head){
         char currNode = getValidChar();
         currChar = creatAllGivenEdges(head,findNode(head,(currNode - '0')));
     }
-    return currChar;    
+    return currChar; 
 }
 
 char insert_node_cmd(pnode *head){
@@ -117,7 +117,7 @@ pnode addNode(pnode *head,pnode currNode,int id){
     currNode->next = NULL;
     currNode->prev = NULL;
     currNode->weight = INFINITY;
-    currNode->flag = 0;
+    currNode->tag = 0;
     currNode->edgeSize = 0;
     
     pnode tempNode = *head;
@@ -217,6 +217,49 @@ void deleteGraph_cmd(pnode* head){
         free(tempNode);
         tempNode = nextNode;
     }
+}
+
+int dijkstra(pnode* head, int src){
+    PriorityQ* queue = NULL;
+    int flag = setAllTags(head,queue,src,-1,INFINITY);
+    if(flag == 1){
+        return flag;
+    }
+    pnode currNode = *head;
+    while (isEmpty(queue) != 1){
+        pnode temp_node = peek(queue);
+        delete(queue);
+        pedge currEdge = currNode->edges;
+        while (currEdge != NULL){
+            int new_weight = temp_node->weight + currEdge->weight;
+            if (new_weight < currEdge->endpoint->weight){
+                currEdge->endpoint->weight = new_weight;
+            }
+            currEdge = currEdge->next;      
+        }   
+    }
+    return 0;
+}
+
+int setAllTags(pnode* head,PriorityQ* queue,int src, int tagVal, double weightVal){
+    pnode currNode = *head;
+    pnode srcNode = findNode(head,src);
+    if (srcNode == NULL){
+        return 1;
+    } 
+    queue = &(createQ(srcNode,0));
+    while (currNode != NULL){
+        if(currNode->node_num == src){
+            currNode->weight = 0;
+            currNode->tag = src;
+        }
+        else{
+            insert(queue,currNode,INFINITY);
+            currNode->weight = weightVal;
+            currNode->tag = tagVal;
+        }
+    }
+    return flag;
 }
 
 void shortsPath_cmd(pnode head){

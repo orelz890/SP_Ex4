@@ -13,7 +13,7 @@ typedef struct edge_ {
 
 typedef struct GRAPH_NODE_ {
     int node_num;
-    int flag;
+    int tag;
     double weight;
     int edgeSize;
     pedge edges;
