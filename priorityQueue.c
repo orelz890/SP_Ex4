@@ -5,10 +5,9 @@
 #include "priorityQueue.h"
 
 // Function to Create A New Node
-PriorityQ createNode(pnode nodeData, int weight){
+PriorityQ createNode(pnode nodeData){
     PriorityQ temp = (PriorityQ)malloc(sizeof(P_Q));
     temp->nodeData = nodeData;
-    temp->priority = weight;
     temp->next = NULL;
     temp->prev = NULL;
  
@@ -23,7 +22,7 @@ PriorityQ peek(PriorityQ* head){
     PriorityQ currNode = *head;
     PriorityQ highestPriority = currNode;
     while (currNode != NULL){
-        if (currNode->priority < highestPriority->priority){
+        if (currNode->nodeData->weight < highestPriority->nodeData->weight){
             highestPriority = currNode;
         }
         currNode = currNode->next;
@@ -48,11 +47,13 @@ int delete(PriorityQ* head, PriorityQ highestPriority){
 }
  
 // Function to push according to priority
-int insert(PriorityQ* head, pnode nodeData, int p){
+int insert(PriorityQ* head, pnode nodeData){
     // Create new Node
-    PriorityQ temp = createNode(nodeData, p);
-    (*head)->prev = temp;
-    temp->next = *head;
+    PriorityQ temp = createNode(nodeData);
+    if(*head != NULL){
+        (*head)->prev = temp;
+        temp->next = *head;
+    }
     head = &temp;
     return 0;
 }

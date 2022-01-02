@@ -254,8 +254,6 @@ PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src){
     if (srcNode == NULL){
         return NULL;
     }
-    PriorityQ firstElement = createNode(srcNode,0);
-    queue = &(firstElement);
     pnode currNode = *head;
     while (currNode != NULL){
         if(currNode->node_num == src){
@@ -263,10 +261,10 @@ PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src){
             currNode->perent = currNode;
         }
         else{
-            insert(queue,currNode,INT_MAX);
             currNode->weight = INT_MAX;
             currNode->perent = NULL;
         }
+        insert(queue,currNode);
     }
     return queue;
 }
