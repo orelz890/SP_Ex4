@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include "priorityQueue.h"
 
-int setAllTags(pnode* head,PriorityQ* queue,int src);
-
-
 // Function to Create A New Node
 PriorityQ createNode(pnode nodeData, int weight){
     PriorityQ temp = (PriorityQ)malloc(sizeof(P_Q));
