@@ -9,34 +9,37 @@
 #define NOPATH 1
 #define WORKED 0
 
-PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src);
+PriorityQ* setAllTags(PriorityQ* queue,int src);
 
+static pnode head;
 
-static pnode graph;
-
-char build_graph_cmd(pnode *head){
-    if (graph != NULL){
-        deleteGraph_cmd(head);
+char build_graph_cmd(){
+    if (head != NULL){
+        deleteGraph_cmd();
     }
+    printf("in here1");
     char c = getValidChar();
+    printf("in here2");
     int nodesNum = c - '0';
     for (size_t i = 0; i < nodesNum; i++){
         pnode currNode = NULL;
         currNode = (pnode) malloc(sizeof(node)); // need to free!!!
-        addNode(head,currNode,i);
+        addNode(currNode,i);
     }
+    printf("in here3");
     char currChar = getValidChar();
     while (currChar == 'n'){
         char currNode = getValidChar();
-        currChar = creatAllGivenEdges(head,findNode(head,(currNode - '0')));
+        currChar = creatAllGivenEdges(findNode(currNode - '0'));
     }
+    printf("in here4");
     return currChar; 
 }
 
-char insert_node_cmd(pnode *head){
+char insert_node_cmd(){
     char c = getValidChar();
     int id = c -'0';
-    pnode foundNode = findNode(head,id);
+    pnode foundNode = findNode(id);
     pnode existingNode = foundNode;
     if (foundNode != NULL){
         pedge currEdge = existingNode->edges;
@@ -48,12 +51,12 @@ char insert_node_cmd(pnode *head){
     }else{
         pnode currNode = NULL;
         currNode = (pnode) malloc(sizeof(node)); // need to free!!!
-        existingNode = addNode(head,currNode,id);
+        existingNode = addNode(currNode,id);
     }
-    return creatAllGivenEdges(head,existingNode);
+    return creatAllGivenEdges(existingNode);
 }
 
-char creatAllGivenEdges(pnode *head,pnode existingNode){
+char creatAllGivenEdges(pnode existingNode){
     char first;
     char sec;
     scanf("%c",&first);
@@ -61,16 +64,16 @@ char creatAllGivenEdges(pnode *head,pnode existingNode){
     while (dest >= 0 && dest <= 9){
         scanf("%c",&sec);
         int weight = sec - '0';
-        addEdge(head,existingNode,dest,weight);
+        addEdge(existingNode,dest,weight);
         scanf("%c",&first);
         dest = first - '0';
     }
     return first;
 }
 
-pnode findNode(pnode *head,int id){
+pnode findNode(int id){
 
-    pnode tempNode = *head;
+    pnode tempNode = head;
     while (tempNode != NULL){
         pnode nextNode = tempNode->next;
         if (tempNode->node_num == id){
@@ -93,7 +96,7 @@ pedge findEdge(pnode currNode ,int dest){
     return NULL;
 }
 
-int addEdge(pnode* head, pnode node, int dest, int weight){
+int addEdge(pnode node, int dest, int weight){
 
     pedge existingEdge = findEdge(node,dest);
     if (existingEdge != NULL){
@@ -103,7 +106,7 @@ int addEdge(pnode* head, pnode node, int dest, int weight){
         pedge newEdge = NULL;
         newEdge = (pedge) malloc(sizeof(edge)); // need to free!!!
         newEdge->weight = weight;
-        newEdge->endpoint = findNode(head,dest);
+        newEdge->endpoint = findNode(dest);
         newEdge->next = NULL;
         if (node->edges == NULL){
             node->edges = newEdge;
@@ -117,7 +120,7 @@ int addEdge(pnode* head, pnode node, int dest, int weight){
     return 0;
 }
 
-pnode addNode(pnode *head,pnode currNode,int id){
+pnode addNode(pnode currNode,int id){
     currNode->node_num = id;
     currNode->edges = NULL;
     currNode->tail = NULL;
@@ -127,7 +130,7 @@ pnode addNode(pnode *head,pnode currNode,int id){
     currNode->weight = INFINITY;
     currNode->edgeSize = 0;
     
-    pnode tempNode = *head;
+    pnode tempNode = head;
     if (tempNode != NULL){    
         while (tempNode->next != NULL){
             // If the a node with that ip already exist retun it.
@@ -139,23 +142,23 @@ pnode addNode(pnode *head,pnode currNode,int id){
         tempNode->next = currNode;
         currNode->prev = tempNode;
     }else{
-        head = &currNode;
+        head = currNode;
     }
     gSize += 1;
     return currNode;
 }
 
-void delete_node_cmd(pnode *head){
+void delete_node_cmd(){
     char c;
     scanf("%c",&c);
     int id = c - '0';
-    removeNode(head, id);
+    removeNode(id);
 }
 
-int removeNode(pnode *head, int id){
+int removeNode(int id){
     // Erasing all the edges that there dest is this node.
     pnode nodeToRemove = NULL;
-    pnode tempNode = *head;
+    pnode tempNode = head;
     int flag = 0;
     while (tempNode != NULL){
         if (tempNode->node_num == id){
@@ -196,7 +199,7 @@ int removeNode(pnode *head, int id){
 }
 
 //for self debug
-void printGraph_cmd(pnode head){
+void printGraph_cmd(){
     pnode currNode = head;
     while (currNode != NULL){
         printf("id: %d {",currNode->node_num);
@@ -210,9 +213,9 @@ void printGraph_cmd(pnode head){
     }
 }
 
-void deleteGraph_cmd(pnode* head){
+void deleteGraph_cmd(){
     // Erasing all the edges to this node
-    pnode tempNode = *head;
+    pnode tempNode = head;
     while (tempNode != NULL){
         pnode nextNode = tempNode->next;
         pedge currEdge = tempNode->edges;
@@ -226,9 +229,9 @@ void deleteGraph_cmd(pnode* head){
     }
 }
 
-int dijkstra(pnode* head, int src){
+int dijkstra(int src){
     PriorityQ* queue = NULL;
-    queue = setAllTags(head,queue,src);
+    queue = setAllTags(queue,src);
     if(queue == NULL){
         return NOPATH;
     }
@@ -249,12 +252,12 @@ int dijkstra(pnode* head, int src){
     return 0;
 }
 
-PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src){
-    pnode srcNode = findNode(head,src);
+PriorityQ* setAllTags(PriorityQ* queue,int src){
+    pnode srcNode = findNode(src);
     if (srcNode == NULL){
         return NULL;
     }
-    pnode currNode = *head;
+    pnode currNode = head;
     while (currNode != NULL){
         if(currNode->node_num == src){
             currNode->weight = 0;
@@ -269,20 +272,18 @@ PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src){
     return queue;
 }
 
-void shortsPath_cmd(pnode head){
+void shortsPath_cmd(){
 
 }
 
-void TSP_cmd(pnode head){
+void TSP_cmd(){
 
 }
 
 char getValidChar(){
     char c;
-    scanf("%c",&c);
-    while (c == ' '){
+    do{
         scanf("%c",&c);
-    }
+    }while (c == ' ');
     return c;
-    
 }

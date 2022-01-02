@@ -23,20 +23,20 @@ typedef struct GRAPH_NODE_ {
 
 } node, *pnode;
 
-char build_graph_cmd(pnode *head);
-char insert_node_cmd(pnode *head);
-void delete_node_cmd(pnode *head);
-void printGraph_cmd(pnode head); //for self debug
-void deleteGraph_cmd(pnode* head);
-void shortsPath_cmd(pnode head);
-void TSP_cmd(pnode head);
-pnode addNode(pnode *head, pnode currNode,int id);
-int addEdge(pnode* head, pnode node, int dest, int weight);
-int removeNode(pnode *head, int id);
-pnode findNode(pnode *head,int id);
+char build_graph_cmd();
+char insert_node_cmd();
+void delete_node_cmd();
+void printGraph_cmd(); //for self debug
+void deleteGraph_cmd();
+void shortsPath_cmd();
+void TSP_cmd();
+pnode addNode(pnode currNode,int id);
+int addEdge(pnode node, int dest, int weight);
+int removeNode(int id);
+pnode findNode(int id);
 pedge findEdge(pnode currNode ,int dest);
-char creatAllGivenEdges(pnode *head,pnode existingNode);
+char creatAllGivenEdges(pnode existingNode);
 char getValidChar();
-int dijkstra(pnode* head, int src);
+int dijkstra(int src);
 
 #endif

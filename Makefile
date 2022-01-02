@@ -6,4 +6,4 @@ graph: main.c graph.c priorityQueue.c  priorityQueue.h graph.h
 
 .PHONY: clean all
 clean:
-	rm -f *.o *.a graph
+	rm -f *.o graph
