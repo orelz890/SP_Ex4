@@ -1,9 +1,18 @@
-#include <math.h> 
+#include <math.h>
+#include <limits.h>
 #include <string.h>
 #include "graph.h"
 #include "priorityQueue.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifndef NOPATH
+#define NOPATH 1
+#ifndef WORKED
+#define WORKED 0
+
+PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src);
+
 
 static pnode graph;
 
@@ -116,8 +125,8 @@ pnode addNode(pnode *head,pnode currNode,int id){
     currNode->tail = NULL;
     currNode->next = NULL;
     currNode->prev = NULL;
+    currNode->perent = NULL;
     currNode->weight = INFINITY;
-    currNode->tag = 0;
     currNode->edgeSize = 0;
     
     pnode tempNode = *head;
@@ -221,45 +230,46 @@ void deleteGraph_cmd(pnode* head){
 
 int dijkstra(pnode* head, int src){
     PriorityQ* queue = NULL;
-    int flag = setAllTags(head,queue,src,-1,INFINITY);
-    if(flag == 1){
-        return flag;
+    queue = setAllTags(head,queue,src);
+    if(queue == NULL){
+        return NOPATH;
     }
-    pnode currNode = *head;
     while (isEmpty(queue) != 1){
-        pnode temp_node = peek(queue);
-        delete(queue);
-        pedge currEdge = currNode->edges;
+        PriorityQ peeking = peek(queue);
+        pnode temp_node = peeking->nodeData;
+        delete(queue,peeking);
+        pedge currEdge = temp_node->edges;
         while (currEdge != NULL){
             int new_weight = temp_node->weight + currEdge->weight;
             if (new_weight < currEdge->endpoint->weight){
                 currEdge->endpoint->weight = new_weight;
+                currEdge->endpoint->perent = &temp_node;
             }
-            currEdge = currEdge->next;      
-        }   
+            currEdge = *(currEdge->next);    
+        }
     }
     return 0;
 }
 
-int setAllTags(pnode* head,PriorityQ* queue,int src, int tagVal, double weightVal){
-    pnode currNode = *head;
+PriorityQ* setAllTags(pnode* head,PriorityQ* queue,int src){
     pnode srcNode = findNode(head,src);
     if (srcNode == NULL){
-        return 1;
-    } 
-    queue = &(createQ(srcNode,0));
+        return NULL;
+    }
+    queue = &(createNode(srcNode,0));
+    pnode currNode = *head;
     while (currNode != NULL){
         if(currNode->node_num == src){
             currNode->weight = 0;
-            currNode->tag = src;
+            currNode->perent = currNode;
         }
         else{
-            insert(queue,currNode,INFINITY);
+            insert(queue,currNode,INT_MAX);
             currNode->weight = weightVal;
-            currNode->tag = tagVal;
+            currNode->perent = NULL;
         }
     }
-    return flag;
+    return queue;
 }
 
 void shortsPath_cmd(pnode head){

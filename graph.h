@@ -13,13 +13,13 @@ typedef struct edge_ {
 
 typedef struct GRAPH_NODE_ {
     int node_num;
-    int tag;
     double weight;
     int edgeSize;
     pedge edges;
     pedge tail;
     struct GRAPH_NODE_ *next;
     struct GRAPH_NODE_ *prev;
+    struct GRAPH_NODE_ *perent;
 
 } node, *pnode;
 
@@ -37,5 +37,7 @@ pnode findNode(pnode *head,int id);
 pedge findEdge(pnode currNode ,int dest);
 char creatAllGivenEdges(pnode *head,pnode existingNode);
 char getValidChar();
+int dijkstra(pnode* head, int src);
+
 
 #endif
