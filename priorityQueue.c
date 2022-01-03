@@ -41,7 +41,7 @@ PriorityQ peek(PriorityQ head){
  
 PriorityQ delete(PriorityQ head, PriorityQ highestPriority){
     // If ture it means the highestPriority is the first element.
-    int higest = highestPriority->nodeData->node_num;
+    // int higest = highestPriority->nodeData->node_num;
     if (highestPriority != NULL){
         if (highestPriority->prev == NULL){
             // printf("im1 %d in proccess\n",higest);

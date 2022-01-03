@@ -3,6 +3,7 @@
 #include <string.h>
 #include "graph.h"
 #include "priorityQueue.h"
+#include "List.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -170,51 +171,83 @@ pnode addNode(pnode currNode,int id){
 
 void delete_node_cmd(){
     char c;
-    scanf("%c",&c);
+    c = getValidChar();
     int id = c - '0';
     removeNode(id);
 }
 
 int removeNode(int id){
+    // printf("node id is: %d\n",id);
+    // fflush(NULL);
+    pnode currentNode = findNode(id);
+    if (id < 0 || currentNode == NULL){
+        return -1;
+    }
+    
     // Erasing all the edges that there dest is this node.
     pnode nodeToRemove = NULL;
     pnode tempNode = head;
+    // printf("head node: %d\n",head->node_num);
+    // fflush(NULL);
     int flag = 0;
     while (tempNode != NULL){
-        if (tempNode->node_num == id){
+        if (tempNode->node_num != id){
+            // printf("currNode is : %d\n",tempNode->node_num);
+            // fflush(NULL);
+            pedge tempEdge = tempNode->edges;
+            pedge prevEdge = NULL;
+            while (tempEdge != NULL){
+                // printf("currEdge is : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
+                // fflush(NULL);
+                pedge nextEdge = tempEdge->next;
+                if (tempEdge->endpoint->node_num == id){
+                    // printf("currEdge removed : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
+                    // fflush(NULL);
+                    free(tempEdge);
+                    if (prevEdge != NULL){
+                        prevEdge->next = nextEdge;
+                    }
+                    tempNode->edgeSize -= 1;
+                    flag = 1;
+                }
+                if (flag == 0){
+                    prevEdge = tempEdge;
+                }
+                else if (prevEdge != NULL){
+                    prevEdge->next = nextEdge;
+                    flag = 0;
+                }
+                tempEdge = nextEdge;
+                // Now temp edge is NULL therefore, prevEdge is the tail.
+                tempNode->tail = prevEdge;
+                // printf("finished a node iteration\n");
+                // fflush(NULL);
+            }
+        }else{
             nodeToRemove = tempNode;
+            // printf("im1\n");
+            // fflush(NULL);
         }
-        pedge tempEdge = tempNode->edges;
-        pedge prevEdge = NULL;
-        while (tempEdge != NULL){
-            pedge nextEdge = tempEdge->next;
-            if (tempEdge->endpoint->node_num == id){
-                free(tempEdge);
-                tempNode->edgeSize -= 1;
-                flag = 1;
-            }
-            if (flag == 0){
-                prevEdge = tempEdge;
-            }
-            else if (prevEdge != NULL){
-                prevEdge->next = nextEdge;
-                flag = 0;
-            }
-            tempEdge = nextEdge;
-        }
-        // Now temp edge is NULL therefore, prevEdge is the tail.
-        tempNode->tail = prevEdge;
         tempNode = tempNode->next;
     }
-    // Erasing this node edges and itself.
-    pedge tempEdge = nodeToRemove->edges;
-    while (tempEdge != NULL){
-        pedge nextEdge = tempEdge->next;
-        free(tempEdge);
-        tempEdge = nextEdge;
-    }
-    free(nodeToRemove);
-    gSize -= 1;
+        // printf("im3\n");
+        // fflush(NULL);
+        // Erasing this node edges and itself.
+        pedge tempEdge = nodeToRemove->edges;
+        while (tempEdge != NULL){
+            pedge nextEdge = tempEdge->next;
+            free(tempEdge);
+            tempEdge = nextEdge;
+        }
+        if (nodeToRemove->prev != NULL){
+            nodeToRemove->prev->next = nodeToRemove->next;
+        }
+        if (nodeToRemove->next != NULL){
+            nodeToRemove->next->prev = nodeToRemove->prev;
+        }
+        free(nodeToRemove);
+        gSize -= 1;
+    
     return 0;
 }
 
@@ -242,11 +275,11 @@ void deleteGraph_cmd(){
     // Erasing all the edges to this node
     pnode tempNode = head;
     while (tempNode != NULL){
-        // printf("%p,%d\n",tempNode,tempNode->node_num);
+        // printf("%p, current node to delete: %d\n",tempNode,tempNode->node_num);
         // fflush(NULL);
         pedge currEdge = tempNode->edges;
         while (currEdge != NULL && currEdge->weight > 0){
-            // printf("%d,%d\n",currEdge->endpoint->node_num,currEdge->weight);
+            // printf("current edge to delete (%d,%d)\n",tempNode->node_num,currEdge->endpoint->node_num);
             // fflush(NULL);
             pedge nextEdge = currEdge->next;
             free(currEdge);
@@ -276,7 +309,7 @@ int dijkstra(int src){
     // fflush(NULL);
 
     if(queue == NULL){
-        return NOPATH;
+        return INT_MAX;
     }
     // printf("im3");
     // fflush(NULL);
@@ -330,74 +363,74 @@ PriorityQ setAllTags(PriorityQ queue,int src){
     return queue;
 }
 
-float shortsPath_cmd(int src, int dest){
-    dijkstra(src);
+int shortsPath_cmd(int src, int dest){
     pnode destNode = findNode(dest);
     pnode srcNode = findNode(src);
     // printf("(%d,%d)src = %d, dest = %d\n",src,dest,srcNode->weight,destNode->weight);
     // fflush(NULL);
-    // float sum = 0;
-    // if(src == dest){
-    //     return 0;
-    // }
-    // if (srcNode== NULL || destNode == NULL){
-    //     printf("-1");
-    //     return -1;
-    // }
-    // while (destNode->perent->node_num != src){
-    //     pedge edge = findEdge(destNode, destNode->perent->node_num);
-    //     sum = sum + edge->weight;
-    //     destNode = destNode->perent;
-    // }
-    // if (sum == INT_MAX){
-    //     printf("-1");
-    //     return -1;
-    // }
-    // return sum;
-    return 0.0;
+    if (srcNode== NULL || destNode == NULL){
+        printf("One of the input dont exist! try again..\n");
+        return INT_MIN;
+    }
+    dijkstra(src);
+    return destNode->weight;
 }
 
-float TSP_cmd(int num){
-    int temp;
-    int lopps = num;
-    int minPath =  INT_MAX;
+int TSP_cmd(int num){
+    if (num == 0 || num == 1){
+        return 0;
+    }
     int cities[num];
-    int n;
-    for (int i = 0; i < num; i++) {
-        n = getValidChar() - '0';
-        cities[i] = n;
+    List Lhead = NULL;
+    int listSize = num;
+    for (size_t i = 0; i < listSize; i++){
+        char c = getValidChar();
+        cities[i] = c - '0';
+        Lhead = listInsert(Lhead, findNode(cities[i]));
+        printf("%d added to list\n",listPeek(Lhead,cities[i])->nodeData->node_num);
+        fflush(NULL);
     }
-    for (int j = 0; j <num; j++){
-        for (int i = 0; i < num-j; i++) {
-            // if size is odd, swap 0th i.e (first) and
-            // (size-1)th i.e (last) element
-            if ((num-j) % 2 == 1){
-                temp = cities[0];
-                cities[0]=cities[num-j - 1];
-                cities[num-j - 1] = temp;}
-            
-                // If size is even, swap ith and
-                // (size-1)th i.e (last) element
-            else if((num-j) % 2 == 0){
-                temp =cities[i];
-                cities[i]=cities[num-j - 1];
-                cities[num-j - 1] = temp;
-                }
-        }
-    if ((num-j) == 1) {
-            int sum = 0;
-            for (int j = 0; j < lopps-1; ++j) {
-                sum += shortsPath_cmd(cities[j], cities[j + 1]);
+    // printf("im1\n");
+    // fflush(NULL);
+    pnode currNode = Lhead->nodeData;
+    printf("currNode = %d\n", currNode->node_num);
+    fflush(NULL);
+    Lhead = listRemove(Lhead,cities[0]);
+    listSize -= 1;
+    printf("im3\n");
+    fflush(NULL);
+
+    int ans = 0;
+    while (listSize > 0){
+        printf("hey\n");
+        fflush(NULL);
+        List src = NULL;
+        int shortest_dist = INT_MAX;
+        printf("list size is: %d\n",listSize);
+        fflush(NULL);
+        List tempHead = Lhead;
+        while(tempHead != NULL){
+            printf("the current city: %d and the current node %d\n",tempHead->nodeData->node_num,currNode->node_num);
+            fflush(NULL);
+            int dist = shortsPath_cmd(currNode->node_num,tempHead->nodeData->node_num);
+            printf("the dist is : %d\n",dist);
+            fflush(NULL);
+            if (dist < shortest_dist){
+                src = tempHead;
+                shortest_dist = dist;
             }
-            if (sum < minPath) {
-                minPath = sum;
-            }
+            tempHead = tempHead->next;
         }
-        }
-    if(minPath == INT_MAX){
-        minPath = -1;
+        currNode = listPeek(Lhead,src->nodeData->node_num)->nodeData;
+        printf("currNode = %d\n",currNode->node_num);
+        fflush(NULL);
+        Lhead = listRemove(Lhead,src->nodeData->node_num);
+        listSize -= 1;
+        printf("im5\n");
+        fflush(NULL);
+        ans += shortest_dist;       
     }
-    return minPath;
+    return ans;
 }
 
 char getValidChar(){

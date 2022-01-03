@@ -28,8 +28,8 @@ char insert_node_cmd();
 void delete_node_cmd();
 void printGraph_cmd(); //for self debug
 void deleteGraph_cmd();
-float shortsPath_cmd(int src, int dest);
-float TSP_cmd(int num);
+int shortsPath_cmd(int src, int dest);
+int TSP_cmd(int num);
 pnode addNode(pnode currNode,int id);
 void addEdge(pnode node, int dest, int weight);
 int removeNode(int id);
