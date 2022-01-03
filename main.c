@@ -40,13 +40,13 @@ char char_ditecter(char c){
         char src = getValidChar();
         char dest = getValidChar();
         int answer = shortsPath_cmd(src-'0',dest-'0');
-        printf("Dijsktra shortest path: %d\n", answer);
+        printf("Dijsktra shortest path: %d \n", answer);
     }
     // Given a list of node it calculates the shortest path that goes through them all. 
     if (c == 'T'){
         char s = getValidChar();
         int answer = TSP_cmd(s - '0');
-        printf("TSP shortest path: %d\n", answer);
+        printf("TSP shortest path: %d \n", answer);
     }
     if (c == 'P'){
         printGraph_cmd();
