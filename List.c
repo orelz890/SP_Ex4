@@ -55,17 +55,6 @@ List listRemove(List head, int id){
 				// printf("got here1\n");
     			// fflush(NULL);
 			}
-			else{
-				// printf("got here2\n");
-				// fflush(NULL);
-				if (currNode->next != NULL){
-					currNode->next->prev = currNode->prev;
-					// printf("got here3\n");
-    				// fflush(NULL);
-				}
-				currNode->prev->next = currNode->next;
-				free(currNode);
-			}
 		}
 		// printf("got here4\n");
     	// fflush(NULL);
@@ -85,8 +74,8 @@ List listInsert(List head, pnode nodeData){
 	// printf("got here1\n");
     // fflush(NULL);
     if(head != NULL){
-        temp->prev = head;
-		temp->next = head->next;
+		temp->next = head;
+		head->prev = temp;
 		head = temp;
 		// printf("got here2\n");
     	// fflush(NULL);

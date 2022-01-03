@@ -383,52 +383,67 @@ int TSP_cmd(int num){
     int cities[num];
     List Lhead = NULL;
     int listSize = num;
-    for (size_t i = 0; i < listSize; i++){
-        char c = getValidChar();
+    char c = getValidChar();
+    cities[0] = c - '0';
+    for (size_t i = 1; i < listSize; i++){
+        c = getValidChar();
         cities[i] = c - '0';
         Lhead = listInsert(Lhead, findNode(cities[i]));
-        printf("%d added to list\n",listPeek(Lhead,cities[i])->nodeData->node_num);
-        fflush(NULL);
+        // printf("%d added to list\n",listPeek(Lhead,cities[i])->nodeData->node_num);
+        // fflush(NULL);
     }
+    Lhead = listInsert(Lhead, findNode(cities[0]));
+    // printf("%d added to list\n",listPeek(Lhead,cities[0])->nodeData->node_num);
+    // fflush(NULL);
     // printf("im1\n");
     // fflush(NULL);
     pnode currNode = Lhead->nodeData;
-    printf("currNode = %d\n", currNode->node_num);
-    fflush(NULL);
+    // printf("currNode = %d\n", currNode->node_num);
+    // fflush(NULL);
     Lhead = listRemove(Lhead,cities[0]);
     listSize -= 1;
-    printf("im3\n");
-    fflush(NULL);
+    // printf("im3\n");
+    // fflush(NULL);
 
     int ans = 0;
     while (listSize > 0){
-        printf("hey\n");
-        fflush(NULL);
+        // printf("hey\n");
+        // fflush(NULL);
         List src = NULL;
         int shortest_dist = INT_MAX;
-        printf("list size is: %d\n",listSize);
-        fflush(NULL);
+        // printf("list size is: %d\n",listSize);
+        // fflush(NULL);
         List tempHead = Lhead;
+        // printf("pointer = %p val %d , pointer2 = %p\n",Lhead,Lhead->nodeData->node_num,tempHead);
+        // fflush(NULL);
         while(tempHead != NULL){
-            printf("the current city: %d and the current node %d\n",tempHead->nodeData->node_num,currNode->node_num);
-            fflush(NULL);
+            // printf("the current city: %d and the current node %d\n",tempHead->nodeData->node_num,currNode->node_num);
+            // fflush(NULL);
             int dist = shortsPath_cmd(currNode->node_num,tempHead->nodeData->node_num);
-            printf("the dist is : %d\n",dist);
-            fflush(NULL);
-            if (dist < shortest_dist){
+            // printf("the dist is : %d\n",dist);
+            // fflush(NULL);
+            if (dist < shortest_dist && tempHead->nodeData->node_num != currNode->node_num){
                 src = tempHead;
                 shortest_dist = dist;
+                // printf("the shortest_dist is: %d\n",shortest_dist);
+                // fflush(NULL);
             }
             tempHead = tempHead->next;
+            // printf("pointer = %p , pointer2 = %p\n",Lhead,tempHead);
+            // fflush(NULL);
         }
         currNode = listPeek(Lhead,src->nodeData->node_num)->nodeData;
-        printf("currNode = %d\n",currNode->node_num);
-        fflush(NULL);
+        // printf("currNode = %d\n",currNode->node_num);
+        // fflush(NULL);
         Lhead = listRemove(Lhead,src->nodeData->node_num);
+        // printf("pointer = %p , val = %d\n",Lhead,Lhead->nodeData->node_num);
+        // fflush(NULL);
         listSize -= 1;
-        printf("im5\n");
-        fflush(NULL);
-        ans += shortest_dist;       
+        // printf("im5\n");
+        // fflush(NULL);
+        ans += shortest_dist;
+        // printf("current ans == %d\n",ans);
+        // fflush(NULL);
     }
     return ans;
 }
