@@ -1,6 +1,5 @@
 #ifndef GRAPH_
 #define GRAPH_
-static int gSize = 0;
 
 typedef struct GRAPH_NODE_ *pnode;
 

@@ -54,7 +54,8 @@ char insert_node_cmd(){
             // fflush(NULL);
             currEdge = nextEdge;
             // printf("next = %d\n", currEdge->weight);
-        }      
+        }
+        existingNode->edges = NULL;
     }
     else{
         pnode currNode = (pnode) malloc(sizeof(node)); // need to free!!!
@@ -78,11 +79,11 @@ char creatAllGivenEdges(pnode existingNode){
             int weight = sec - '0';
             addEdge(existingNode,dest,weight);
             // printf("dest = %d, weight = %d\n",dest,weight);
-            fflush(NULL);
+            // fflush(NULL);
         }
     } while ((first - '0') >= 0 && (first - '0') <= 9);
     // printf("finished and first = %c\n",first);
-    fflush(NULL);
+    // fflush(NULL);
     return first;
 }
 
@@ -165,7 +166,6 @@ pnode addNode(pnode currNode,int id){
     }else{
         head = currNode;
     }
-    gSize += 1;
     return currNode;
 }
 
@@ -177,8 +177,8 @@ void delete_node_cmd(){
 }
 
 int removeNode(int id){
-    // printf("node id is: %d\n",id);
-    // fflush(NULL);
+    printf("node id is: %d\n",id);
+    fflush(NULL);
     pnode currentNode = findNode(id);
     if (id < 0 || currentNode == NULL){
         return -1;
@@ -187,51 +187,47 @@ int removeNode(int id){
     // Erasing all the edges that there dest is this node.
     pnode nodeToRemove = NULL;
     pnode tempNode = head;
-    // printf("head node: %d\n",head->node_num);
-    // fflush(NULL);
-    int flag = 0;
+    printf("head node: %d\n",head->node_num);
+    fflush(NULL);
     while (tempNode != NULL){
         if (tempNode->node_num != id){
-            // printf("currNode is : %d\n",tempNode->node_num);
-            // fflush(NULL);
+            printf("currNode is : %d\n",tempNode->node_num);
+            fflush(NULL);
             pedge tempEdge = tempNode->edges;
             pedge prevEdge = NULL;
             while (tempEdge != NULL){
-                // printf("currEdge is : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
-                // fflush(NULL);
+                printf("currEdge is : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
+                fflush(NULL);
                 pedge nextEdge = tempEdge->next;
                 if (tempEdge->endpoint->node_num == id){
-                    // printf("currEdge removed : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
-                    // fflush(NULL);
-                    free(tempEdge);
+                    printf("currEdge removed : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
+                    fflush(NULL);
                     if (prevEdge != NULL){
                         prevEdge->next = nextEdge;
+                    }else{
+                        tempNode->edges = nextEdge;
                     }
+                    free(tempEdge);
                     tempNode->edgeSize -= 1;
-                    flag = 1;
                 }
-                if (flag == 0){
+                else{
                     prevEdge = tempEdge;
-                }
-                else if (prevEdge != NULL){
-                    prevEdge->next = nextEdge;
-                    flag = 0;
                 }
                 tempEdge = nextEdge;
                 // Now temp edge is NULL therefore, prevEdge is the tail.
                 tempNode->tail = prevEdge;
-                // printf("finished a node iteration\n");
-                // fflush(NULL);
             }
         }else{
             nodeToRemove = tempNode;
-            // printf("im1\n");
-            // fflush(NULL);
+            printf("im1\n");
+            fflush(NULL);
         }
+        printf("finished a node iteration\n");
+        fflush(NULL);
         tempNode = tempNode->next;
     }
-        // printf("im3\n");
-        // fflush(NULL);
+        printf("im3\n");
+        fflush(NULL);
         // Erasing this node edges and itself.
         pedge tempEdge = nodeToRemove->edges;
         while (tempEdge != NULL){
@@ -246,7 +242,6 @@ int removeNode(int id){
             nodeToRemove->next->prev = nodeToRemove->prev;
         }
         free(nodeToRemove);
-        gSize -= 1;
     
     return 0;
 }
@@ -322,16 +317,18 @@ int dijkstra(int src){
         while (currEdge != NULL){
             int new_weight = temp_node->weight + currEdge->weight;
             if (new_weight < currEdge->endpoint->weight){
-                if (currEdge->endpoint->node_num == 3){
+                // if (currEdge->endpoint->node_num == 3){
                     // printf("%d,(edge (%d,%d),temp node %d) == (%d+%d)"
                 //         ,currEdge->endpoint->weight,temp_node->node_num,currEdge->endpoint->node_num,
                 //         temp_node->node_num,currEdge->weight,temp_node->weight);
                 //     fflush(NULL);
-                }
+                // }
                 currEdge->endpoint->weight = new_weight;
                 currEdge->endpoint->perent = temp_node;
             }
-            currEdge = currEdge->next;  
+            // printf("currEdge == (%d,%d)\n",temp_node->node_num,currEdge->endpoint->node_num);
+            // fflush(NULL);
+            currEdge = currEdge->next;
         }
     }
     // printf("im4");
@@ -364,88 +361,125 @@ PriorityQ setAllTags(PriorityQ queue,int src){
 }
 
 int shortsPath_cmd(int src, int dest){
+
     pnode destNode = findNode(dest);
     pnode srcNode = findNode(src);
-    // printf("(%d,%d)src = %d, dest = %d\n",src,dest,srcNode->weight,destNode->weight);
+    // printf("(%d,%d) src = %d, dest = %d\n",srcNode->weight,destNode->weight,src,dest);
     // fflush(NULL);
     if (srcNode== NULL || destNode == NULL){
         printf("One of the input dont exist! try again..\n");
-        return INT_MIN;
+        return INT_MAX;
     }
     dijkstra(src);
+    int ans = destNode->weight;
+    if (ans == INT_MIN){
+        return INT_MAX;
+    }
+    
     return destNode->weight;
 }
 
 int TSP_cmd(int num){
-    if (num == 0 || num == 1){
+    if (num == 0){
         return 0;
     }
     int cities[num];
-    List Lhead = NULL;
-    int listSize = num;
-    char c = getValidChar();
-    cities[0] = c - '0';
-    for (size_t i = 1; i < listSize; i++){
-        c = getValidChar();
+    for (size_t i = 0; i < num; i++){
+        char c = getValidChar();
         cities[i] = c - '0';
-        Lhead = listInsert(Lhead, findNode(cities[i]));
-        // printf("%d added to list\n",listPeek(Lhead,cities[i])->nodeData->node_num);
+        // printf("%c\n",c);
         // fflush(NULL);
     }
-    Lhead = listInsert(Lhead, findNode(cities[0]));
-    // printf("%d added to list\n",listPeek(Lhead,cities[0])->nodeData->node_num);
-    // fflush(NULL);
+    if (num == 1){
+        return 0;
+    }
     // printf("im1\n");
     // fflush(NULL);
-    pnode currNode = Lhead->nodeData;
-    // printf("currNode = %d\n", currNode->node_num);
-    // fflush(NULL);
-    Lhead = listRemove(Lhead,cities[0]);
-    listSize -= 1;
-    // printf("im3\n");
-    // fflush(NULL);
+    int shorts_path_of_all = INT_MAX;
+    for (int i = 0; i < num; i++){
+        List Lhead = NULL;
+        int listSize = num;
+        int current_shortest_path = INT_MAX;
+        for (int j = 0; j < num; j++){
+            if (i != j){
+                Lhead = listInsert(Lhead, findNode(cities[j]));
+                // printf("%d added to the list!\n",Lhead->nodeData->node_num);
+            }
+        }
+        Lhead = listInsert(Lhead, findNode(cities[i]));
 
-    int ans = 0;
-    while (listSize > 0){
-        // printf("hey\n");
+        pnode currNode = Lhead->nodeData;
+        // printf("currNode = %d\n", currNode->node_num);
         // fflush(NULL);
-        List src = NULL;
-        int shortest_dist = INT_MAX;
-        // printf("list size is: %d\n",listSize);
+        Lhead = listRemove(Lhead,cities[0]);
+        listSize -= 1;
+        // printf("im3\n");
         // fflush(NULL);
-        List tempHead = Lhead;
-        // printf("pointer = %p val %d , pointer2 = %p\n",Lhead,Lhead->nodeData->node_num,tempHead);
-        // fflush(NULL);
-        while(tempHead != NULL){
-            // printf("the current city: %d and the current node %d\n",tempHead->nodeData->node_num,currNode->node_num);
+
+        int ans = 0;
+        while (listSize > 0){
+            // printf("hey\n");
             // fflush(NULL);
-            int dist = shortsPath_cmd(currNode->node_num,tempHead->nodeData->node_num);
-            // printf("the dist is : %d\n",dist);
+            List src = NULL;
+            int shortest_dist = INT_MAX;
+            // printf("list size is: %d\n",listSize);
             // fflush(NULL);
-            if (dist < shortest_dist && tempHead->nodeData->node_num != currNode->node_num){
-                src = tempHead;
-                shortest_dist = dist;
-                // printf("the shortest_dist is: %d\n",shortest_dist);
+            List tempHead = NULL;
+            tempHead = Lhead;
+            // printf("pointer = %p val %d , pointer2 = %p\n",Lhead,Lhead->nodeData->node_num,tempHead);
+            // fflush(NULL);
+            while(tempHead != NULL){
+                // printf("the current city: %d and the current node %d\n",tempHead->nodeData->node_num,currNode->node_num);
+                // fflush(NULL);
+                int dist = shortsPath_cmd(currNode->node_num,tempHead->nodeData->node_num);
+                // printf("the dist is : %d\n",dist);
+                // fflush(NULL);
+                if (dist < shortest_dist && tempHead->nodeData->node_num != currNode->node_num){
+                    src = tempHead;
+                    shortest_dist = dist;
+                    // printf("the shortest_dist is: %d between %d and %d\n",shortest_dist,currNode->node_num,tempHead->nodeData->node_num);
+                    // fflush(NULL);
+                }
+                tempHead = tempHead->next;
+                // printf("pointer = %p , pointer2 = %p\n",Lhead,tempHead);
                 // fflush(NULL);
             }
-            tempHead = tempHead->next;
-            // printf("pointer = %p , pointer2 = %p\n",Lhead,tempHead);
+            // printf("sfbafb %p\n",src);
             // fflush(NULL);
+            if(src != NULL){
+                currNode = listPeek(Lhead,src->nodeData->node_num)->nodeData;
+            }
+            else{
+                ans = INT_MAX;
+                break;
+            }
+            // printf("currNode = %d\n",currNode->node_num);
+            // fflush(NULL);
+            Lhead = listRemove(Lhead,src->nodeData->node_num);
+            // printf("pointer = %p , val = %d\n",Lhead,Lhead->nodeData->node_num);
+            // fflush(NULL);
+            listSize -= 1;
+            // printf("im5\n");
+            // fflush(NULL);
+            if (shortest_dist == INT_MAX){
+                ans = INT_MAX;
+            }
+            else{
+                ans += shortest_dist;
+            }
         }
-        currNode = listPeek(Lhead,src->nodeData->node_num)->nodeData;
-        // printf("currNode = %d\n",currNode->node_num);
-        // fflush(NULL);
-        Lhead = listRemove(Lhead,src->nodeData->node_num);
-        // printf("pointer = %p , val = %d\n",Lhead,Lhead->nodeData->node_num);
-        // fflush(NULL);
-        listSize -= 1;
-        // printf("im5\n");
-        // fflush(NULL);
-        ans += shortest_dist;
+        current_shortest_path = ans;
+        if (shorts_path_of_all > current_shortest_path){
+            shorts_path_of_all = current_shortest_path;
+        }
         // printf("current ans == %d\n",ans);
         // fflush(NULL);
+        // printf("current shortest path of all== %d\n",shorts_path_of_all);
+        // fflush(NULL);
+
+        
     }
-    return ans;
+    return shorts_path_of_all;
 }
 
 char getValidChar(){

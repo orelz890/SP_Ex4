@@ -17,6 +17,8 @@ List listCreateNode(pnode nodeData){
  
 // Return the value at head
 List listPeek(List head,int id){
+	// printf("zdfbzsfbzdfb\n");
+	// fflush(NULL);
 	List ans = head;
 	while (ans != NULL && ans->nodeData->node_num != id){
 		ans = ans->next;
