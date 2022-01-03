@@ -274,6 +274,7 @@ int dijkstra(int src){
         return NOPATH;
     }
     while (isEmpty(queue) != 1){
+        
         PriorityQ peeking = peek(queue);
         pnode temp_node = peeking->nodeData;
         delete(queue,peeking);
