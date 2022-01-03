@@ -17,6 +17,7 @@ static pnode head;
 char build_graph_cmd(){
     if (head != NULL){
         deleteGraph_cmd();
+        printGraph_cmd();
     }
     char c = getValidChar();
     int nodesNum = c - '0';
@@ -177,8 +178,8 @@ void delete_node_cmd(){
 }
 
 int removeNode(int id){
-    printf("node id is: %d\n",id);
-    fflush(NULL);
+    // printf("node id is: %d\n",id);
+    // fflush(NULL);
     pnode currentNode = findNode(id);
     if (id < 0 || currentNode == NULL){
         return -1;
@@ -187,21 +188,21 @@ int removeNode(int id){
     // Erasing all the edges that there dest is this node.
     pnode nodeToRemove = NULL;
     pnode tempNode = head;
-    printf("head node: %d\n",head->node_num);
-    fflush(NULL);
+    // printf("head node: %d\n",head->node_num);
+    // fflush(NULL);
     while (tempNode != NULL){
         if (tempNode->node_num != id){
-            printf("currNode is : %d\n",tempNode->node_num);
-            fflush(NULL);
+            // printf("currNode is : %d\n",tempNode->node_num);
+            // fflush(NULL);
             pedge tempEdge = tempNode->edges;
             pedge prevEdge = NULL;
             while (tempEdge != NULL){
-                printf("currEdge is : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
-                fflush(NULL);
+                // printf("currEdge is : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
+                // fflush(NULL);
                 pedge nextEdge = tempEdge->next;
                 if (tempEdge->endpoint->node_num == id){
-                    printf("currEdge removed : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
-                    fflush(NULL);
+                    // printf("currEdge removed : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
+                    // fflush(NULL);
                     if (prevEdge != NULL){
                         prevEdge->next = nextEdge;
                     }else{
@@ -219,15 +220,15 @@ int removeNode(int id){
             }
         }else{
             nodeToRemove = tempNode;
-            printf("im1\n");
-            fflush(NULL);
+            // printf("im1\n");
+            // fflush(NULL);
         }
-        printf("finished a node iteration\n");
-        fflush(NULL);
+        // printf("finished a node iteration\n");
+        // fflush(NULL);
         tempNode = tempNode->next;
     }
-        printf("im3\n");
-        fflush(NULL);
+        // printf("im3\n");
+        // fflush(NULL);
         // Erasing this node edges and itself.
         pedge tempEdge = nodeToRemove->edges;
         while (tempEdge != NULL){
@@ -268,31 +269,36 @@ void printGraph_cmd(){
 
 void deleteGraph_cmd(){
     // Erasing all the edges to this node
-    pnode tempNode = head;
-    while (tempNode != NULL){
-        // printf("%p, current node to delete: %d\n",tempNode,tempNode->node_num);
-        // fflush(NULL);
-        pedge currEdge = tempNode->edges;
-        while (currEdge != NULL && currEdge->weight > 0){
-            // printf("current edge to delete (%d,%d)\n",tempNode->node_num,currEdge->endpoint->node_num);
-            // fflush(NULL);
-            pedge nextEdge = currEdge->next;
-            free(currEdge);
-            tempNode->edgeSize -= 1;
-            currEdge = nextEdge;
-        }
-        free(tempNode);
-        tempNode = tempNode->next;
+    while (head != NULL){
+        pnode next = head->next;
+        removeNode(head->node_num);
+        head = next;
     }
+    
+    // pnode tempNode = head;
+    // while (tempNode != NULL){
+    //     printf("%p, current node to delete: %d\n",tempNode,tempNode->node_num);
+    //     fflush(NULL);
+    //     pedge currEdge = tempNode->edges;
+    //     while (currEdge != NULL){
+    //         printf("current edge deleted (%d,%d)\n",tempNode->node_num,currEdge->endpoint->node_num);
+    //         fflush(NULL);
+    //         pedge nextEdge = currEdge->next;
+    //         free(currEdge);
+    //         tempNode->edgeSize -= 1;
+    //         currEdge = nextEdge;
+    //     }
+    //     tempNode = tempNode->next;
+    // }
     // printf("cosemak va cosemak %d,%d,%d",head->node_num,head->weight,head->edgeSize);
-    // // pnode firstNode = head;
-    // // while (firstNode != NULL){
-    // //     printf("%p,%d\n",tempNode,tempNode->node_num);
-    // //     fflush(NULL);
-    // //     pnode nextNodeInLine = tempNode->next;
-    // //     free(tempNode);
-    // //     tempNode = nextNodeInLine;
-    // // }
+    // pnode firstNode = head;
+    // while (firstNode != NULL){
+    //     printf("%p,%d\n",tempNode,tempNode->node_num);
+    //     fflush(NULL);
+    //     pnode nextNodeInLine = tempNode->next;
+    //     free(tempNode);
+    //     tempNode = nextNodeInLine;
+    // }
 }
 
 int dijkstra(int src){
@@ -316,6 +322,9 @@ int dijkstra(int src){
         pedge currEdge = temp_node->edges;
         while (currEdge != NULL){
             int new_weight = temp_node->weight + currEdge->weight;
+            if (temp_node->weight == INT_MAX){
+                new_weight = INT_MAX;
+            }
             if (new_weight < currEdge->endpoint->weight){
                 // if (currEdge->endpoint->node_num == 3){
                     // printf("%d,(edge (%d,%d),temp node %d) == (%d+%d)"
@@ -371,15 +380,12 @@ int shortsPath_cmd(int src, int dest){
         return INT_MAX;
     }
     dijkstra(src);
-    int ans = destNode->weight;
-    if (ans == INT_MIN){
-        return INT_MAX;
-    }
-    
     return destNode->weight;
 }
 
 int TSP_cmd(int num){
+    // printf("starting TSP\n");
+    // fflush(NULL);
     if (num == 0){
         return 0;
     }
@@ -473,12 +479,13 @@ int TSP_cmd(int num){
             shorts_path_of_all = current_shortest_path;
         }
         // printf("current ans == %d\n",ans);
-        // fflush(NULL);
         // printf("current shortest path of all== %d\n",shorts_path_of_all);
-        // fflush(NULL);
-
-        
+        // fflush(NULL);        
     }
+    if (shorts_path_of_all == INT_MAX){
+        return -1;
+    }
+    
     return shorts_path_of_all;
 }
 
