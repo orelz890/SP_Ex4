@@ -268,26 +268,42 @@ void deleteGraph_cmd(){
 }
 
 int dijkstra(int src){
+    // printf("im1");
+    // fflush(NULL);
     PriorityQ queue = NULL;
     queue = setAllTags(queue,src);
+    // printf("im2");
+    // fflush(NULL);
+
     if(queue == NULL){
         return NOPATH;
     }
+    // printf("im3");
+    // fflush(NULL);
     while (isEmpty(queue) != 1){
-        
+
         PriorityQ peeking = peek(queue);
         pnode temp_node = peeking->nodeData;
-        delete(queue,peeking);
+        queue = delete(queue,peeking);
         pedge currEdge = temp_node->edges;
         while (currEdge != NULL){
             int new_weight = temp_node->weight + currEdge->weight;
             if (new_weight < currEdge->endpoint->weight){
+                if (currEdge->endpoint->node_num == 3){
+                    // printf("%d,(edge (%d,%d),temp node %d) == (%d+%d)"
+                //         ,currEdge->endpoint->weight,temp_node->node_num,currEdge->endpoint->node_num,
+                //         temp_node->node_num,currEdge->weight,temp_node->weight);
+                //     fflush(NULL);
+                }
                 currEdge->endpoint->weight = new_weight;
                 currEdge->endpoint->perent = temp_node;
             }
             currEdge = currEdge->next;  
         }
     }
+    // printf("im4");
+    // fflush(NULL);
+
     return 0;
 }
 
@@ -316,8 +332,10 @@ PriorityQ setAllTags(PriorityQ queue,int src){
 
 float shortsPath_cmd(int src, int dest){
     dijkstra(src);
-    // pnode destNode = findNode(dest);
-    // pnode srcNode = findNode(src);
+    pnode destNode = findNode(dest);
+    pnode srcNode = findNode(src);
+    // printf("(%d,%d)src = %d, dest = %d\n",src,dest,srcNode->weight,destNode->weight);
+    // fflush(NULL);
     // float sum = 0;
     // if(src == dest){
     //     return 0;

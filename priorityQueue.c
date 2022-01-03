@@ -25,9 +25,12 @@ PriorityQ peek(PriorityQ head){
     // fflush(NULL);
     PriorityQ highestPriority = currNode;
     while (currNode != NULL){
-        if (currNode->nodeData->weight < highestPriority->nodeData->weight){
-            highestPriority = currNode;
+        if (currNode->nodeData->weight >= 0){    
+            if (currNode->nodeData->weight < highestPriority->nodeData->weight){
+                highestPriority = currNode;
+            }
         }
+        
         currNode = currNode->next;
     }
     // printf("return node %d\n",highestPriority->nodeData->node_num);
@@ -36,7 +39,7 @@ PriorityQ peek(PriorityQ head){
     return highestPriority;
 }
  
-int delete(PriorityQ head, PriorityQ highestPriority){
+PriorityQ delete(PriorityQ head, PriorityQ highestPriority){
     // If ture it means the highestPriority is the first element.
     int higest = highestPriority->nodeData->node_num;
     if (highestPriority != NULL){
@@ -75,7 +78,7 @@ int delete(PriorityQ head, PriorityQ highestPriority){
     }
     // printf("node %d deleted\n",higest);
     // fflush(NULL);
-    return 0;
+    return head;
 }
  
 // Function to push according to priority

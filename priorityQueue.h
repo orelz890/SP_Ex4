@@ -8,6 +8,6 @@ typedef struct priorityQueue{
 
 PriorityQ createNode(pnode nodeData);
 PriorityQ peek(PriorityQ head);
-int delete(PriorityQ head, PriorityQ highestPriority);
+PriorityQ delete(PriorityQ head, PriorityQ highestPriority);
 PriorityQ insert(PriorityQ head, pnode nodeData);
 int isEmpty(PriorityQ head);
