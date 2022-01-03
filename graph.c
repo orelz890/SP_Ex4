@@ -9,7 +9,7 @@
 #define NOPATH 1
 #define WORKED 0
 
-PriorityQ* setAllTags(PriorityQ* queue,int src);
+PriorityQ setAllTags(PriorityQ queue,int src);
 
 static pnode head;
 
@@ -268,7 +268,7 @@ void deleteGraph_cmd(){
 }
 
 int dijkstra(int src){
-    PriorityQ* queue = NULL;
+    PriorityQ queue = NULL;
     queue = setAllTags(queue,src);
     if(queue == NULL){
         return NOPATH;
@@ -290,7 +290,7 @@ int dijkstra(int src){
     return 0;
 }
 
-PriorityQ* setAllTags(PriorityQ* queue,int src){
+PriorityQ setAllTags(PriorityQ queue,int src){
     pnode srcNode = findNode(src);
     if (srcNode == NULL){
         return NULL;
@@ -305,33 +305,37 @@ PriorityQ* setAllTags(PriorityQ* queue,int src){
             currNode->weight = INT_MAX;
             currNode->perent = NULL;
         }
-        insert(queue,currNode);
+        // printf("id: %d\n",currNode->node_num);
+        // fflush(NULL);
+        queue = insert(queue,currNode);
+        currNode = currNode->next;
     }
     return queue;
 }
 
 float shortsPath_cmd(int src, int dest){
     dijkstra(src);
-    pnode destNode = findNode(dest);
-    pnode srcNode = findNode(src);
-    float sum = 0;
-    if(src == dest){
-        return 0;
-    }
-    if (srcNode== NULL || destNode == NULL){
-        printf("-1");
-        return -1;
-    }
-    while (destNode->perent->node_num != src){
-        pedge edge = findEdge(destNode, destNode->perent->node_num);
-        sum = sum + edge->weight;
-        destNode = destNode->perent;
-    }
-    if (sum == INT_MAX){
-        printf("-1");
-        return -1;
-    }
-    return sum;
+    // pnode destNode = findNode(dest);
+    // pnode srcNode = findNode(src);
+    // float sum = 0;
+    // if(src == dest){
+    //     return 0;
+    // }
+    // if (srcNode== NULL || destNode == NULL){
+    //     printf("-1");
+    //     return -1;
+    // }
+    // while (destNode->perent->node_num != src){
+    //     pedge edge = findEdge(destNode, destNode->perent->node_num);
+    //     sum = sum + edge->weight;
+    //     destNode = destNode->perent;
+    // }
+    // if (sum == INT_MAX){
+    //     printf("-1");
+    //     return -1;
+    // }
+    // return sum;
+    return 0.0;
 }
 
 float TSP_cmd(int num){
