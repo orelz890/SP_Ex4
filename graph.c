@@ -17,8 +17,7 @@ static pnode head;
 char build_graph_cmd(){
     if (head != NULL){
         deleteGraph_cmd();
-        printGraph_cmd();
-    }
+     }
     char c = getValidChar();
     int nodesNum = c - '0';
     for (size_t i = 0; i < nodesNum; i++){
