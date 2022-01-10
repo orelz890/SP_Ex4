@@ -38,6 +38,7 @@ List listRemove(List head, int id){
     while (currNode != NULL){
 		// printf("got here 0\n");
     	// fflush(NULL);
+		List nextOne = currNode->next;
 		if (currNode->nodeData->node_num == id){
 			// printf("got here 0.1\n");
     		// fflush(NULL);
@@ -60,7 +61,7 @@ List listRemove(List head, int id){
 		}
 		// printf("got here4\n");
     	// fflush(NULL);
-		currNode = currNode->next;
+		currNode = nextOne;
 	}
 	// printf("finise the remove func\n");
 	// fflush(NULL);

@@ -473,6 +473,13 @@ int TSP_cmd(int num){
                 ans += shortest_dist;
             }
         }
+        if(Lhead != NULL){
+            while (Lhead != NULL){
+                List curr = Lhead;
+                Lhead = Lhead->next;
+                free(curr);
+            }
+        }
         current_shortest_path = ans;
         if (shorts_path_of_all > current_shortest_path){
             shorts_path_of_all = current_shortest_path;
@@ -484,7 +491,6 @@ int TSP_cmd(int num){
     if (shorts_path_of_all == INT_MAX){
         return -1;
     }
-    
     return shorts_path_of_all;
 }
 
