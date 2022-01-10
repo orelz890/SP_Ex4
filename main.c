@@ -10,16 +10,13 @@ int main(){
     char c;
     do{
         c = getValidChar();
-        // printf("returns %c\n",c);
         char_ditecter(c);
     } while (c != '\n');
-    // printf("finished");
     deleteGraph_cmd();
     return 0;
 }
 
 char char_ditecter(char c){
-    // printf("current char is: %c\n",c);
     char ans = ' ';
     // Add node.
     if(c == 'B' || c == 'n'){
@@ -51,6 +48,5 @@ char char_ditecter(char c){
     if (c == 'P'){
         printGraph_cmd();
     }
-    // printf("next in line is %c\n",ans);
     return ans;
 }

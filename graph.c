@@ -38,22 +38,13 @@ char insert_node_cmd(){
     char c = getValidChar();
     int id = c -'0';
     pnode existingNode = findNode(id);
-    // if (existingNode != NULL){
-    //     printf("%d\n",existingNode->node_num);
-    // }
-    // fflush(NULL);
     if (existingNode != NULL){
         pedge currEdge = existingNode->edges;
         while (existingNode->edgeSize != 0){
             pedge nextEdge = currEdge->next;
-            // printf("before = %d\n", currEdge->weight);
-            // fflush(NULL);
             free(currEdge);
             existingNode->edgeSize -= 1;
-            // printf("after = %d\n", currEdge->weight);
-            // fflush(NULL);
             currEdge = nextEdge;
-            // printf("next = %d\n", currEdge->weight);
         }
         existingNode->edges = NULL;
     }
@@ -61,8 +52,6 @@ char insert_node_cmd(){
         pnode currNode = (pnode) malloc(sizeof(node)); // need to free!!!
         existingNode = addNode(currNode,id);
     }
-    // printf("%p,%d\n",existingNode->edges,existingNode->node_num);
-    // fflush(NULL);
     char ans = creatAllGivenEdges(existingNode);
     return ans;
 }
@@ -78,12 +67,8 @@ char creatAllGivenEdges(pnode existingNode){
             sec = getValidChar();
             int weight = sec - '0';
             addEdge(existingNode,dest,weight);
-            // printf("dest = %d, weight = %d\n",dest,weight);
-            // fflush(NULL);
         }
     } while ((first - '0') >= 0 && (first - '0') <= 9);
-    // printf("finished and first = %c\n",first);
-    // fflush(NULL);
     return first;
 }
 
@@ -108,16 +93,12 @@ pedge findEdge(pnode currNode ,int dest){
             return edgesPointer;
         }
         i+=1;
-        // printf("im here: %p,%d\n",edgesPointer,edgesPointer->endpoint->node_num);
-        // fflush(NULL);
         edgesPointer = edgesPointer->next;
     }
     return NULL;
 }
 
 void addEdge(pnode node, int dest, int weight){
-    // printf("%p,%d,%d",node,dest,weight);
-    // fflush(NULL);
     pedge existingEdge = findEdge(node,dest);
     if (existingEdge != NULL){
         existingEdge->weight = weight;
@@ -125,6 +106,9 @@ void addEdge(pnode node, int dest, int weight){
     else{
         pedge newEdge = NULL;
         newEdge = (pedge) malloc(sizeof(edge)); // need to free!!!
+        if(newEdge == NULL){
+            return;
+        }
         newEdge->weight = weight;
         newEdge->endpoint = findNode(dest);
         newEdge->next = NULL;
@@ -177,31 +161,20 @@ void delete_node_cmd(){
 }
 
 int removeNode(int id){
-    // printf("node id is: %d\n",id);
-    // fflush(NULL);
     pnode currentNode = findNode(id);
     if (id < 0 || currentNode == NULL){
         return -1;
     }
-    
     // Erasing all the edges that there dest is this node.
     pnode nodeToRemove = NULL;
     pnode tempNode = head;
-    // printf("head node: %d\n",head->node_num);
-    // fflush(NULL);
     while (tempNode != NULL){
         if (tempNode->node_num != id){
-            // printf("currNode is : %d\n",tempNode->node_num);
-            // fflush(NULL);
             pedge tempEdge = tempNode->edges;
             pedge prevEdge = NULL;
             while (tempEdge != NULL){
-                // printf("currEdge is : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
-                // fflush(NULL);
                 pedge nextEdge = tempEdge->next;
                 if (tempEdge->endpoint->node_num == id){
-                    // printf("currEdge removed : (%d,%d)\n",tempNode->node_num,tempEdge->endpoint->node_num);
-                    // fflush(NULL);
                     if (prevEdge != NULL){
                         prevEdge->next = nextEdge;
                     }else{
@@ -219,30 +192,24 @@ int removeNode(int id){
             }
         }else{
             nodeToRemove = tempNode;
-            // printf("im1\n");
-            // fflush(NULL);
         }
-        // printf("finished a node iteration\n");
-        // fflush(NULL);
         tempNode = tempNode->next;
     }
-        // printf("im3\n");
-        // fflush(NULL);
-        // Erasing this node edges and itself.
-        pedge tempEdge = nodeToRemove->edges;
-        while (tempEdge != NULL){
-            pedge nextEdge = tempEdge->next;
-            free(tempEdge);
-            tempEdge = nextEdge;
-        }
-        if (nodeToRemove->prev != NULL){
-            nodeToRemove->prev->next = nodeToRemove->next;
-        }
-        if (nodeToRemove->next != NULL){
-            nodeToRemove->next->prev = nodeToRemove->prev;
-        }
-        free(nodeToRemove);
-    
+    // Erasing this node edges and itself.
+    pedge tempEdge = nodeToRemove->edges;
+    while (tempEdge != NULL){
+        pedge nextEdge = tempEdge->next;
+        free(tempEdge);
+        tempEdge = nextEdge;
+    }
+    if (nodeToRemove->prev != NULL){
+        nodeToRemove->prev->next = nodeToRemove->next;
+    }
+    if (nodeToRemove->next != NULL){
+        nodeToRemove->next->prev = nodeToRemove->prev;
+    }
+    free(nodeToRemove);
+
     return 0;
 }
 
@@ -273,48 +240,15 @@ void deleteGraph_cmd(){
         removeNode(head->node_num);
         head = next;
     }
-    
-    // pnode tempNode = head;
-    // while (tempNode != NULL){
-    //     printf("%p, current node to delete: %d\n",tempNode,tempNode->node_num);
-    //     fflush(NULL);
-    //     pedge currEdge = tempNode->edges;
-    //     while (currEdge != NULL){
-    //         printf("current edge deleted (%d,%d)\n",tempNode->node_num,currEdge->endpoint->node_num);
-    //         fflush(NULL);
-    //         pedge nextEdge = currEdge->next;
-    //         free(currEdge);
-    //         tempNode->edgeSize -= 1;
-    //         currEdge = nextEdge;
-    //     }
-    //     tempNode = tempNode->next;
-    // }
-    // printf("cosemak va cosemak %d,%d,%d",head->node_num,head->weight,head->edgeSize);
-    // pnode firstNode = head;
-    // while (firstNode != NULL){
-    //     printf("%p,%d\n",tempNode,tempNode->node_num);
-    //     fflush(NULL);
-    //     pnode nextNodeInLine = tempNode->next;
-    //     free(tempNode);
-    //     tempNode = nextNodeInLine;
-    // }
 }
 
 int dijkstra(int src){
-    // printf("im1");
-    // fflush(NULL);
     PriorityQ queue = NULL;
     queue = setAllTags(queue,src);
-    // printf("im2");
-    // fflush(NULL);
-
     if(queue == NULL){
         return INT_MAX;
     }
-    // printf("im3");
-    // fflush(NULL);
     while (isEmpty(queue) != 1){
-
         PriorityQ peeking = peek(queue);
         pnode temp_node = peeking->nodeData;
         queue = delete(queue,peeking);
@@ -325,23 +259,12 @@ int dijkstra(int src){
                 new_weight = INT_MAX;
             }
             if (new_weight < currEdge->endpoint->weight){
-                // if (currEdge->endpoint->node_num == 3){
-                    // printf("%d,(edge (%d,%d),temp node %d) == (%d+%d)"
-                //         ,currEdge->endpoint->weight,temp_node->node_num,currEdge->endpoint->node_num,
-                //         temp_node->node_num,currEdge->weight,temp_node->weight);
-                //     fflush(NULL);
-                // }
                 currEdge->endpoint->weight = new_weight;
                 currEdge->endpoint->perent = temp_node;
             }
-            // printf("currEdge == (%d,%d)\n",temp_node->node_num,currEdge->endpoint->node_num);
-            // fflush(NULL);
             currEdge = currEdge->next;
         }
     }
-    // printf("im4");
-    // fflush(NULL);
-
     return 0;
 }
 
@@ -360,8 +283,6 @@ PriorityQ setAllTags(PriorityQ queue,int src){
             currNode->weight = INT_MAX;
             currNode->perent = NULL;
         }
-        // printf("id: %d\n",currNode->node_num);
-        // fflush(NULL);
         queue = insert(queue,currNode);
         currNode = currNode->next;
     }
@@ -372,8 +293,6 @@ int shortsPath_cmd(int src, int dest){
 
     pnode destNode = findNode(dest);
     pnode srcNode = findNode(src);
-    // printf("(%d,%d) src = %d, dest = %d\n",srcNode->weight,destNode->weight,src,dest);
-    // fflush(NULL);
     if (srcNode== NULL || destNode == NULL){
         printf("One of the input dont exist! try again..\n");
         return INT_MAX;
@@ -383,8 +302,6 @@ int shortsPath_cmd(int src, int dest){
 }
 
 int TSP_cmd(int num){
-    // printf("starting TSP\n");
-    // fflush(NULL);
     if (num == 0){
         return 0;
     }
@@ -392,65 +309,44 @@ int TSP_cmd(int num){
     for (size_t i = 0; i < num; i++){
         char c = getValidChar();
         cities[i] = c - '0';
-        // printf("%c\n",c);
-        // fflush(NULL);
     }
     if (num == 1){
         return 0;
     }
-    // printf("im1\n");
-    // fflush(NULL);
+    // A pram to store the ans
     int shorts_path_of_all = INT_MAX;
     for (int i = 0; i < num; i++){
+        // Open a list & add the elements we got to it
         List Lhead = NULL;
         int listSize = num;
         int current_shortest_path = INT_MAX;
         for (int j = 0; j < num; j++){
             if (i != j){
                 Lhead = listInsert(Lhead, findNode(cities[j]));
-                // printf("%d added to the list!\n",Lhead->nodeData->node_num);
             }
         }
         Lhead = listInsert(Lhead, findNode(cities[i]));
+        // The list is up to date!
 
+        // Find the current shortest path by using the shortsPath_cmd function
         pnode currNode = Lhead->nodeData;
-        // printf("currNode = %d\n", currNode->node_num);
-        // fflush(NULL);
         Lhead = listRemove(Lhead,cities[0]);
         listSize -= 1;
-        // printf("im3\n");
-        // fflush(NULL);
-
         int ans = 0;
+
         while (listSize > 0){
-            // printf("hey\n");
-            // fflush(NULL);
             List src = NULL;
             int shortest_dist = INT_MAX;
-            // printf("list size is: %d\n",listSize);
-            // fflush(NULL);
             List tempHead = NULL;
             tempHead = Lhead;
-            // printf("pointer = %p val %d , pointer2 = %p\n",Lhead,Lhead->nodeData->node_num,tempHead);
-            // fflush(NULL);
             while(tempHead != NULL){
-                // printf("the current city: %d and the current node %d\n",tempHead->nodeData->node_num,currNode->node_num);
-                // fflush(NULL);
                 int dist = shortsPath_cmd(currNode->node_num,tempHead->nodeData->node_num);
-                // printf("the dist is : %d\n",dist);
-                // fflush(NULL);
                 if (dist < shortest_dist && tempHead->nodeData->node_num != currNode->node_num){
                     src = tempHead;
                     shortest_dist = dist;
-                    // printf("the shortest_dist is: %d between %d and %d\n",shortest_dist,currNode->node_num,tempHead->nodeData->node_num);
-                    // fflush(NULL);
                 }
                 tempHead = tempHead->next;
-                // printf("pointer = %p , pointer2 = %p\n",Lhead,tempHead);
-                // fflush(NULL);
             }
-            // printf("sfbafb %p\n",src);
-            // fflush(NULL);
             if(src != NULL){
                 currNode = listPeek(Lhead,src->nodeData->node_num)->nodeData;
             }
@@ -458,14 +354,8 @@ int TSP_cmd(int num){
                 ans = INT_MAX;
                 break;
             }
-            // printf("currNode = %d\n",currNode->node_num);
-            // fflush(NULL);
             Lhead = listRemove(Lhead,src->nodeData->node_num);
-            // printf("pointer = %p , val = %d\n",Lhead,Lhead->nodeData->node_num);
-            // fflush(NULL);
             listSize -= 1;
-            // printf("im5\n");
-            // fflush(NULL);
             if (shortest_dist == INT_MAX){
                 ans = INT_MAX;
             }
@@ -473,6 +363,7 @@ int TSP_cmd(int num){
                 ans += shortest_dist;
             }
         }
+        // If we still didnt free all the Lists elements we used:
         if(Lhead != NULL){
             while (Lhead != NULL){
                 List curr = Lhead;
@@ -481,13 +372,12 @@ int TSP_cmd(int num){
             }
         }
         current_shortest_path = ans;
+        // If the current shortest path is lower update the answer 
         if (shorts_path_of_all > current_shortest_path){
             shorts_path_of_all = current_shortest_path;
-        }
-        // printf("current ans == %d\n",ans);
-        // printf("current shortest path of all== %d\n",shorts_path_of_all);
-        // fflush(NULL);        
+        }     
     }
+    // If we got no path
     if (shorts_path_of_all == INT_MAX){
         return -1;
     }
